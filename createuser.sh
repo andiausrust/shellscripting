@@ -9,14 +9,14 @@
 # make shure the script is beeing executed with superuser privileges
 if [[ "${UID}" -ne 0 ]]
 then
-    echo ' please run with sudo or as root'
+    echo ' please run with sudo or as root' >&2
     exit 1
 fi
 
 # at least one argument is required
 if [[ "${#}" -lt 1 ]]
 then
-    echo "Usage: ${0} USER_NAME [COMMENT]..."
+    echo "Usage: ${0} USER_NAME [COMMENT]..." >&2
     ECHO 'Create an account ...'
     exit 1
 fi
@@ -32,27 +32,27 @@ COMMENT="{@}"
 PASSWORD=$(date +%s | sha256sum | head -c48)
 
 # create the account
-useradd -c "${COMMENT}" -m "${USER_NAME}"
+useradd -c "${COMMENT}" -m "${USER_NAME}" &> /dev/null
 
 # check for the return status to see if successfully created an account
 if [[ "${?}" -ne 0 ]]
 then
-    echo 'the account could not be created'
+    echo 'the account could not be created' >&2
     exit 1
 fi
 
 # set the password
-echo ${PASSWORD} | password --stdin ${USER_NAME}
+echo ${PASSWORD} | password --stdin ${USER_NAME} &> /dev/null
 
 # check if password command succeeded
 if [[ "${?}" -ne 0 ]]
 then
-    echo 'password could not be set'
+    echo 'password could not be set' >&2
     exit 1
 fi
 
 # Force password change on first login
-passwd -e ${USER_NAME}
+passwd -e ${USER_NAME} &> /dev/null
 
 # display the username, password and the host where the user was created
 echo
