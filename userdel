@@ -1,0 +1,1 @@
+# mac: sudo dscl . -delete /Users/{target-user-here}
